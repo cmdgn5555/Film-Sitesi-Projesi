@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'account/css/style.css' %}">
+{% endblock %}
+
+{% block title %}Kaydol{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-3 ms-5">
+        <div class="col">
+            <h1 style="font-family: cursive;">Kaydol</h1>
+            <hr>
+
+            <form method="POST">
+                
+                {% csrf_token %}
+                
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <div class="mb-5">
+                    <label for="username" class="form-label" style="font-family: cursive;">Username</label>
+                    <input type="text" class="form-control" name="username" placeholder="Kullanıcı adınızı giriniz..." style="font-family: cursive;" value="{{ kul_adi }}" required>
+                </div>
+                
+                <div class="mb-5">
+                    <label for="email" class="form-label" style="font-family: cursive;">Email</label>
+                    <input type="email" class="form-control" name="email" placeholder="Eposta adresinizi giriniz..." style="font-family: cursive;" value="{{ mail }}" required>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col">
+                        <label for="firstname" class="form-label" style="font-family: cursive;">Firstname</label>
+                        <input type="text" class="form-control" name="firstname" placeholder="Adınızı giriniz..." style="font-family: cursive;" value="{{ ad }}" required>
+                    </div>
+                    <div class="col">
+                        <label for="lastname" class="form-label" style="font-family: cursive;">Lastname</label>
+                        <input type="text" class="form-control" name="lastname" placeholder="Soyadınızı giriniz..." style="font-family: cursive;" value="{{ soyad }}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col">
+                        <label for="password" class="form-label" style="font-family: cursive;">Password</label>
+                        <input type="password" class="form-control" name="password" placeholder="Şifrenizi giriniz..." style="font-family: cursive;" required>
+                    </div>
+                    <div class="col">
+                        <label for="re-password" class="form-label" style="font-family: cursive;">Re-Password</label>
+                        <input type="password" class="form-control" name="re-password" placeholder="Şifrenizi tekrar giriniz..." style="font-family: cursive;" required>
+                    </div>
+                </div>
+                
+                <input type="submit" value="Register" class="btn btn-primary">
+            
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_files %}
+
+    <script src="{% static 'account/js/script.js' %}"></script>
+
+{% endblock %}

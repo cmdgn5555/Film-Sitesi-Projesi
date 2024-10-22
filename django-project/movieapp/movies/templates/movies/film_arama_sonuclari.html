@@ -1,0 +1,20 @@
+
+<body style="background-color:beige;">
+<div class="container" style="background-color: bisque; border-radius: 10px;">
+    <h2 style="font-family: cursive;">Arama Sonuçları</h2>
+
+    {% if filmler %}
+        <ol style="font-size: 15px; font-family: cursive;">
+        {% for film in filmler %}
+            <li>
+                <h4 style="background-color: blanchedalmond;">
+                    {{ film.film_adi }} - {{ film.film_yapim_yili }}<br> Oyuncular: {{ film.basrol_oyunculari }}
+                </h4>
+            </li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p><h3 style="font-family: cursive;">{{ sorgu }} için bulunan sonuçlar 0</h3></p>
+    {% endif %}
+</div>
+</body>

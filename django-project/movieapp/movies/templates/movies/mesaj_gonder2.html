@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    <h3 style="font-family: cursive; font-weight: bold;">{{ alici.username }} adlı kullanıcıya mesaj gönder</h3><br>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="konu" style="font-family: cursive; font-weight: bold;">Konu:</label>
+            <input type="text" id="konu" name="konu" class="form-control" placeholder="Mesaj konusu" required>
+        </div><br>
+        
+        <div class="form-group">
+            <label for="mesaj" style="font-family: cursive; font-weight: bold;">Mesaj:</label>
+            <textarea id="mesaj" name="mesaj" class="form-control" rows="4" placeholder="Mesajınızı buraya yazın..." required></textarea>
+        </div><br>
+        
+        <button type="submit" class="btn btn-primary">Mesaj Gönder</button>
+
+        <button type="reset" class="btn btn-danger">Sıfırla</button>
+    </form>
+
+    <a href="{% url 'kullanici_listesi' %}" class="btn btn-primary btn-sm" style="margin-top: 20px; font-family: cursive;">Kullanıcı Listesine Dön</a>
+
+    <a href="{% url 'anasayfa' %}" class="btn btn-primary btn-sm" style="margin-top: 20px; font-family: cursive;">Anasayfaya Dön</a>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+<div class="list-group">
+    {% for kategori in kategoriler %}
+        {% if kategori.slug == secilen_kategori %}
+            <a class="list-group-item list-group-item-action active" href="{% url 'kategoriye_göre_filmler' kategori.slug %}" style="font-family: cursive;">{{ kategori.name|upper }}</a>
+        {% else %}
+            <a class="list-group-item list-group-item-action" href="{% url 'kategoriye_göre_filmler' kategori.slug %}" style="font-family: cursive;">{{ kategori.name|title }}</a>
+        {% endif %}
+    {% endfor %}
+</div>

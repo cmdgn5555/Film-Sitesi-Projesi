@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body{
+            background-color: burlywood;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" style="font-family: cursive;">FilmApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'anasayfa' %}" style="font-family: cursive;">
+                            <i class="fas fa-home"></i> Ana Sayfaya Git
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'filmler' %}" style="font-family: cursive;">
+                            <i class="fas fa-film"></i> Filmler Sayfasına Git
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profil_görünüm' %}" style="font-family: cursive;">
+                            <i class="fas fa-user"></i> Profil Sayfasına Dön
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <!-- Filmler Başlığı -->
+        <h1 class="mb-4 text-center" style="font-family: cursive; font-weight: bold;">Tüm Filmler</h1><hr>
+
+        <div class="row">
+            {% for movie in movies %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <!-- Film Resmi -->
+                        {% if movie.resim %}
+                            <img src="{{ movie.resim.url }}" class="card-img-top" alt="{{ movie.film_adi }}">
+                        
+                            <div class="card-body">
+                                <!-- Film Adı -->
+                                <h5 class="card-title" style="font-family: cursive;">{{ movie.film_adi }}</h5><br>
+
+                                <!-- İzledim ve Favorilere Ekle Butonları -->
+                                <div class="d-flex justify-content-between">
+                                    <form method="POST" action="{% url 'izlenilen_filmi_ekle' movie.slug %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary btn-sm" style="font-family: cursive;">
+                                            <i class="fas fa-eye"></i> İzledim
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="POST" action="{% url 'izlenecekler_listesine_ekle' movie.slug %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-info btn-sm" style="font-family: cursive;">
+                                            <i class="fas fa-clock"></i> İzlenecek
+                                        </button>
+                                    </form>
+                                    
+                                    <form method="POST" action="{% url 'favorilere_film_ekle' movie.slug %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-warning btn-sm" style="font-family: cursive;">
+                                            <i class="fas fa-heart"></i> Favorilere Ekle
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if movies.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ movies.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in movies.paginator.page_range %}
+                    {% if movies.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > movies.number|add:'-3' and num < movies.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if movies.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ movies.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ movies.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        // Sayfa kapanmadan önce mevcut kaydırma pozisyonunu kaydeder
+        window.onbeforeunload = function() {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        };
+
+        // Sayfa yüklendiğinde önceki kaydırma pozisyonuna döner
+        window.onload = function() {
+            var scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition !== null) {
+                window.scrollTo(0, scrollPosition);
+            }
+        };
+    </script>
+
+    <!-- Bootstrap JS -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

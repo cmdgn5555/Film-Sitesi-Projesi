@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'account/css/style.css' %}">
+{% endblock %}
+
+{% block title %}Giriş Yap{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-3 ms-5">
+        <div class="col">
+            <h1 style="font-family: cursive;">Giriş yap</h1>
+            <hr>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if error1 %}
+                    <div class="alert alert-warning">
+                        {{ error1 }}
+                    </div>
+                    {% if remaining_time %}
+                        <p id="timer">Lütfen {{ remaining_time }} saniye bekleyin..</p>
+                    {% endif %}
+                
+                {% elif error2 %}
+                    <div class="alert alert-primary">
+                        {{ error2 }}
+                    </div>
+                    {% if remaining_time %}
+                        <p id="timer">Lütfen {{ remaining_time }} saniye bekleyin..</p>
+                    {% endif %}
+                
+                {% elif error3 %}
+                    <div class="alert alert-danger">
+                        {{ error3 }}
+                    </div>
+                    {% if remaining_time %}
+                        <p id="timer">Lütfen {{ remaining_time }} saniye bekleyin..</p>
+                    {% endif %}
+                
+                {% elif error4 %}
+                    <div class="alert alert-danger">
+                        {{ error4 }}
+                    </div>
+                {% endif %}
+
+                <div class="mb-5">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                
+                <div class="mb-5">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+
+                <div class="mb-5">
+                    {{ form.captcha.label_tag }}
+                    {{ form.captcha }}
+                </div>
+
+                <input type="submit" value="Login" class="btn btn-primary">
+            </form>
+
+        </div>
+    </div>
+
+    {% if remaining_time %}
+    <script>
+        let remainingTime = {{ remaining_time }};
+        const timerElement = document.getElementById('timer');
+
+        const countdown = setInterval(() => {
+            remainingTime -= 1;
+            timerElement.textContent = `Lütfen ${remainingTime} saniye bekleyin...`;
+
+            if (remainingTime <= 0) {
+                clearInterval(countdown);
+                location.reload();
+            }
+        }, 1000);
+    </script>
+    {% endif %}
+
+
+{% endblock %}
+
+{% block js_files %}
+
+    <script src="{% static 'account/js/script.js' %}"></script>
+
+{% endblock %}

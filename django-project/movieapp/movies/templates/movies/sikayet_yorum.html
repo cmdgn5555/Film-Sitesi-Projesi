@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 style="font-family: cursive; font-weight: bold;">{{ yorum.user.username }} kullanıcısının yorumunu şikayet et</h2>
+  <p><strong style="font-family: cursive;">Yorum:</strong> {{ yorum.yorum_text }}</p>
+  <form method="post">
+    {% csrf_token %}
+    <label for="id_neden" style="font-family: cursive;">Şikayet Nedeni:</label>
+    <select name="neden" id="id_neden">
+      {% for neden in form.fields.neden.queryset %}
+        <option value={{ neden.id }}>{{ neden.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-danger btn-sm">Şikayet Et</button>
+  </form>
+</div>
+{% endblock %}

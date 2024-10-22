@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Navbar{% endblock %}</title>
+    
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'anasayfa' %}">MovieApp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+          
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
+            <li class="nav-item">
+              <a class="nav-link btn btn-info" href="{% url 'anasayfa' %}">
+                <i class="fas fa-home"></i> Anasayfa
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link btn btn-info" href="{% url 'filmler' %}">
+                 <i class="fas fa-film"></i> Filmler
+              </a>
+            </li>
+          </ul>
+          
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              {% if user.is_authenticated %}
+                
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'profil_görünüm' %}">
+                    <i class="fas fa-user"></i> Profilim
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'kullanici_listesi' %}">
+                    <i class="fas fa-users"></i> Kullanıcılar
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'gelen_mesajlarim' %}">
+                    <i class="fas fa-inbox"></i> Gelen Kutusu
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'gonderdigim_mesajlar' %}">
+                    <i class="fas fa-paper-plane"></i> Giden Kutusu
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'uyari_mesajlarim' %}">
+                    <i class="fas fa-exclamation-triangle"></i> Gelen Uyarılar
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'arkadaslik_istekleri' %}">
+                    <i class="fas fa-user-friends"></i> Arkadaşlık İstekleri
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'arkadaslar' %}">
+                    <i class="fas fa-user-check"></i> Arkadaşlarım
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link btn btn-secondary" href="{% url 'takip_ettiklerim' %}">
+                    <i class="fas fa-heart"></i> Takip Ettiklerim
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link btn btn-secondary" href="{% url 'beni_takip_edenler' %}">
+                      <i class="fas fa-heartbeat"></i> Takip Edenler
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a class="nav-link btn btn-danger" href="{% url 'cikis' %}">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <span class="nav-link" style="font-family: cursive; font-size: large; color:black">Hoşgeldin, {{ user.username|title }}</span>
+                </li>
+
+              {% else %}
+                
+                <li class="nav-item">
+                  <a class="nav-link btn btn-info" href="{% url 'giris' %}">
+                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a class="nav-link btn btn-info" href="{% url 'kaydol' %}">
+                    <i class="fas fa-user-plus"></i> Kaydol
+                  </a>
+                </li>
+              
+              {% endif %}
+          </ul>
+          
+          <form class="d-flex flex-grow-1" role="search" action="{% url 'film_arama' %}" method="get">
+            <input class="form-control me-1" type="search" placeholder="Search" name="q" aria-label="Search" required style="flex-grow: 1; min-width: 100px;">
+            <button class="btn btn-outline-light" type="submit">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </form>
+          <div id="search-results"></div>
+        </div>
+      </div>
+  </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.querySelector('input[name="q"]');
+        const searchResults = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', function () {
+            const query = searchInput.value;
+
+            if (query.length > 0) {
+                fetch(`/film_arama/?q=${query}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        searchResults.innerHTML = data;
+                    });
+            } else {
+                searchResults.innerHTML = '';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

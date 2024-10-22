@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block css_files %}
+    
+    <link rel="stylesheet" href="{% static 'movies/css/style.css' %}">
+    
+    <style>
+      marquee span {
+          margin-right: 150px;
+      }
+    </style>
+    
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+{% endblock %}
+
+{% block title %}Movie Detail{% endblock %}
+
+{% block content %}
+    
+{% include 'partials/_navbar.html' %}
+
+  
+  <div class="container mt-3">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img src="{{ movie.resim.url }}" class="img-fluid rounded-start" alt="...">
+            </div>
+                  
+            <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">{{ movie.film_adi }}({{ movie.film_yapim_yili|date:"Y" }})</h5>
+                  <p class="card-text" style="font-family: cursive; color:darkblue;">{{ movie.detay_aciklama|striptags|safe }}</p>
+
+                  {% if user_rating %}
+                     <p style="font-family: cursive;">
+                         Kullanıcı Puanı:
+                         <span class="badge badge-primary" style="font-size: 1em; background-color: blue; color: white;">{{ user_rating.rating }} / 10</span>
+                     </p>
+                  {% else %}
+                     <p style="font-family: cursive;">Henüz puanlama yapmadınız.</p>
+                  {% endif %}
+
+                  <div class="rating-section">
+                    <form action="{% url 'film_puanla' movie.slug %}" method="POST">
+                      {% csrf_token %}
+                      {{ rating_form.as_p }}
+                      <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-star"></i> Puan Ver
+                      </button>
+                    </form>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-12 my-3">
+
+                      <div class="carousel slide carousel-fade" data-bs-ride="carousel" id="slider1" style="width: 100%;">
+                        <div class="carousel-inner">
+                          <h2 style="font-family: cursive; font-size: large;">Başrol Oyuncuları</h2>
+                          
+                            {% for oyuncu in movie.oyuncular.all %}
+                              <div class="carousel-item {% if forloop.first %} active {% endif %}" data-bs-interval="2000">
+                                <img class="img-fluid" src="{{ oyuncu.resim.url }}" alt="{{ oyuncu.isim }}" style="max-height: 250px; border-radius:30px;">
+                                <div class="carousel-caption" style="text-align: center;">
+                                  <h6 style="color:black; font-family: cursive; font-size: large;">{{ oyuncu.isim }}</h6>
+                                </div>
+                              </div>
+                            {% endfor %}
+                        </div>
+
+                        <a href="#slider1" class="carousel-control-prev" data-bs-slide="prev">
+                          <span class="carousel-control-prev-icon" style="background-color: black;"></span>
+                        </a>
+                        <a href="#slider1" class="carousel-control-next" data-bs-slide="next">
+                          <span class="carousel-control-next-icon" style="background-color: black;"></span>
+                        </a>
+                      </div>
+                    </div>
+                      
+                    <div class="col-md-12">
+                        <video id="fragman-video" height="200" controls autoplay style="border-radius: 20px; border-style: double;">
+                            <source src="{{ movie.video.url }}" type="video/mp4">
+                            <track id="alt-yazi" src="{% static 'movies/subtitles/example.vtt' %}" kind="subtitles" srclang="tr" label="Turkish">
+                        </video>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12 mt-4">
+                    <marquee behavior="scroll" direction="left" scrollamount="15" style="font-size: 1.3em; color: black; font-family: cursive; background-color: lightgray; padding: 10px; border-radius: 10px; border-style: double;">
+                        <span><strong>Filmin Adı: {{ movie.film_adi }}</strong></span>
+                        <span><strong>Filmin Yapım Yılı: {{ movie.film_yapim_yili }}</strong></span>
+                        <span><strong>Başrol Oyuncuları: {{ movie.basrol_oyunculari }}</strong></span>
+                        <span><strong>Filmin Konusu: {{ movie.aciklama|safe|striptags }}</strong></span>
+                        <span><strong>Vizyon Tarihi: {{ movie.vizyon_tarihi }}</strong></span>
+                    </marquee>
+                  </div>
+
+                  <div class="comments-section mt-5">
+                    <h3>Yorumlar</h3>
+                    {% if yorumlar %}
+                        
+                            {% for yorum in yorumlar %}
+                                  <div class="comment">
+                                    <strong>{{ yorum.user.username }}</strong> - <em>{{ yorum.created_at|date:"d M Y H:i" }}</em>
+                                    <p>{{ yorum.yorum_text }}</p>
+                                    <a href="?cevap={{ yorum.id }}" class="btn btn-info btn-sm">
+                                      <i class="fas fa-reply"></i> Yanıtla
+                                    </a>
+                                    
+                                      {% if yorum.user == request.user %}
+                                            <a href="{% url 'yorum_duzenle' yorum.id %}" class="btn btn-secondary btn-sm">
+                                              <i class="fas fa-edit"></i> Düzenle
+                                            </a>
+                                            <a href="{% url 'yorum_sil' yorum.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Yorumunuzu silmek istediğinizden emin misiniz?');">
+                                              <i class="fas fa-trash-alt"></i> Sil
+                                            </a>
+                                        {% endif %}
+                                        
+                                        <a href="{% url 'like_yorum' yorum.id %}" class="btn btn-success btn-sm">
+                                            <i class="fas fa-thumbs-up"></i> Like 
+                                            <span class="badge badge-light" style="background-color: black;">{{ yorum.total_likes }}</span>
+                                        </a>
+                                          
+                                        <a href="{% url 'dislike_yorum' yorum.id %}" class="btn btn-danger btn-sm">
+                                              <i class="fas fa-thumbs-down"></i> Dislike 
+                                              <span class="badge badge-light" style="background-color: black;">{{ yorum.total_dislikes }}</span>
+                                        </a>
+                                          
+                                        <a href="{% url 'sikayet_yorum' yorum.id %}" class="btn btn-warning btn-sm">
+                                              <i class="fas fa-exclamation-triangle"></i> Şikayet Et 
+                                              <span class="badge badge-light" style="background-color: black;">{{ yorum.toplam_sikayet_sayisi }}</span>
+                                        </a>
+                                    
+                                    
+                                        {% for reply in yorum.replies.all %}
+                                                <div class="reply" style="margin-left: 30px;">
+                                                    <strong>{{ reply.user.username }}</strong> - <em>{{ reply.created_at|date:"d M Y H:i" }}</em>
+                                                    <p>{{ reply.yorum_text }}</p>
+                                                
+                                                  
+                                                  {% if reply.user == request.user %}
+                                                      <a href="{% url 'yorum_duzenle' reply.id %}" class="btn btn-secondary btn-sm mb-4">
+                                                        <i class="fas fa-edit"></i> Düzenle
+                                                      </a>
+                                                      <a href="{% url 'yorum_sil' reply.id %}" class="btn btn-danger btn-sm mb-4" onclick="return confirm('Yorumunuzu silmek istediğinizden emin misiniz?');">
+                                                        <i class="fas fa-trash-alt"></i> Sil
+                                                      </a>
+                                                  {% endif %}
+                                                  
+                                                  <a href="{% url 'like_yorum' reply.id %}" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-thumbs-up"></i> Like 
+                                                        <span class="badge badge-light" style="background-color: black;">{{ reply.total_likes }}</span>
+                                                  </a>
+                                                  
+                                                  <a href="{% url 'dislike_yorum' reply.id %}" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-thumbs-down"></i> Dislike 
+                                                        <span class="badge badge-light" style="background-color: black;">{{ reply.total_dislikes }}</span>
+                                                  </a>
+                                                  
+                                                  <a href="{% url 'sikayet_yorum' reply.id %}" class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-exclamation-triangle"></i> Şikayet Et 
+                                                        <span class="badge badge-light" style="background-color: black;">{{ reply.toplam_sikayet_sayisi }}</span>
+                                                  </a>
+                                              
+                                                </div>
+                                            
+                                            <br>
+                                        {% endfor %}
+                                  </div> <br>
+                                  
+                                      
+                                  {% if yanitlanan_yorum and yanitlanan_yorum.id == yorum.id %}           
+                                      
+                                      <form method="POST">
+                                          {% csrf_token %}
+                                          {{ yorum_form.as_p }}
+                                          <input type="hidden" name="parent" value="{{ yorum.id }}">
+                                          <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-paper-plane"></i> Yanıtı Gönder
+                                          </button>
+                                      </form>
+                                  
+                                  {% endif %}
+                                  
+                            {% endfor %}
+                        
+                    {% else %}
+                        <p>Bu filme henüz yorum yapılmamış. İlk yorumu siz yapabilirsiniz!</p>
+                    {% endif %}
+
+                    <hr>
+
+                    <!-- Yorum Formu -->
+                  
+                    <h3>Yeni Yorum Ekle</h3>
+                      <form action="{% url 'film_detay' movie.slug %}" method="post">
+                          {% csrf_token %}
+                          {{ yorum_form.as_p }}
+                          <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-comment"></i> Yorum Yap
+                          </button>
+                      </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js_files %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script>
+        // Altyazıları otomatik açmak için
+        document.addEventListener("DOMContentLoaded", function() {
+            var video = document.getElementById('fragman-video');
+            var track = video.textTracks[0];  // İlk altyazı parçasını al
+
+            if (track) {
+                track.mode = "showing";  // Altyazıyı göster
+            }
+        });
+    </script>
+{% endblock %}
+       

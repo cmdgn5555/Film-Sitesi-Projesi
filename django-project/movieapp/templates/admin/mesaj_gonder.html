@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Uyarı Mesajı Gönder</title>
+</head>
+<body>
+    <h2 style="font-family: cursive; font-weight: bold;">Uyarı Mesajı Gönder</h2><br><hr>
+    <p style="font-family: cursive;">Uyarı mesajı gönderilecek kullanıcı ID: {{ kullanici_id }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <label for="mesaj" style="font-family: cursive;">Mesaj:</label>
+        <textarea id="mesaj" name="mesaj" rows="4" cols="50" placeholder="Uyarı mesajınızı buraya yazın..." required></textarea>
+        <br><hr>
+        <button type="submit" class="btn btn-primary btn-sm">Uyarı Gönder</button>
+    </form>
+    <a href="{% url 'admin:movies_yorumsikayet_changelist' %}" class="btn btn-secondary btn-sm">Geri Dön</a>
+</body>
+</html>
+
+{% endblock %}

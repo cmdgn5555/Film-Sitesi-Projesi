@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksik Profil</title>
+</head>
+<body>
+    <h3 style="font-family: cursive; font-weight: bold;">Profiliniz Eksik</h3>
+    <p style="font-family: cursive;">Profiliniz tamamlanmamış. Lütfen buraya --> <a href="{% url 'profil_düzenle' %}" class="btn btn-primary btn-sm">Profil Düzenle</a> tıklayarak profilinizi düzenleyin.</p>
+</body>
+</html>
+
+{% endblock %}

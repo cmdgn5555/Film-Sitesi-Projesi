@@ -1,0 +1,36 @@
+{% load static %}
+
+{% load custom_filters %}
+
+<div class="card mb-3" style="background-color:#dcdcdc; height:1400px;">
+    <img src="{{ film.resim.url }}" class="card-img-top" alt="..." style="height: 500px; object-fit: cover;">
+    <div class="card-body d-flex flex-column" style="font-family: cursive; color:black; overflow: hidden;">
+        <h3 class="card-title p-1">{{ film.film_adi }}<br>({{ film.film_yapim_yili|date:"Y" }})</h3><br>
+        <p class="card-text">{{ film.aciklama|striptags|safe|slice:"0:500" }}</p><br>
+        <p class="card-text"><strong style="font-size: large;">Başrol Oyuncuları:</strong><br>{{ film.basrol_oyunculari }}</p>
+        <p class="card-text"><strong style="font-size: large;">Görüntülenme Sayısı:</strong> {{ film.goruntulenme_sayisi }}</p>
+        <p class="card-text"><strong style="font-size: medium;">Vizyon Tarihi:</strong> {{ film.vizyon_tarihi }}</p>
+        <p class="card-text"><strong style="font-size: medium;">Kalan Süre:</strong> {{ film.vizyon_tarihi|remaining_time }}</p>
+        
+
+        <div class="interaction-buttons">
+            <form action="{% url 'like_film' film.slug %}" method="POST" class="d-inline-block">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm">
+                    👍 Beğen: <span>{{ film.likes }}</span>
+                </button>
+            </form>
+
+            <form action="{% url 'dislike_film' film.slug %}" method="POST" class="d-inline-block">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">
+                    👎 Beğenme: <span>{{ film.dislikes }}</span>
+                </button>
+            </form>
+        </div>
+
+       <div class="mt-auto">
+            <a href="{% url 'film_detay' film.slug %}" class="btn btn-warning">Details</a>
+        </div>
+    </div>
+</div>
